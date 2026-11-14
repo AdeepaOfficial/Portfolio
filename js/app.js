@@ -19,6 +19,7 @@ const FALLBACK_PORTFOLIO_DATA = {
     name: "Adeepa Marambage",
     shortName: "Adeepa",
     monogram: "<AM />",
+    avatarUrl: "",
     role: "Full-Stack Software Engineer & BICT Honours Undergraduate",
     institution: "University of Sri Jayewardenepura",
     degree: "Bachelor of Information and Communication Technology (BICT) Honours",
@@ -277,6 +278,7 @@ async function initPortfolioData() {
   renderBranding(data.profile);
   renderHero(data.profile);
   renderAbout(data.profile);
+  renderContact(data.profile);
   renderStats(data.stats);
   renderSkills(data.skills);
   renderProjects(data.projects);
@@ -341,15 +343,54 @@ function renderAbout(profile) {
   const locationEl = document.getElementById('about-location');
   const bioSummaryEl = document.getElementById('about-bio-summary');
   const monogramEl = document.getElementById('about-monogram');
+  const avatarImg = document.getElementById('about-avatar-img');
 
   if (nameEl) nameEl.textContent = profile.name;
   if (roleEl) roleEl.textContent = profile.degree;
   if (emailEl) emailEl.textContent = profile.email;
   if (locationEl) locationEl.textContent = profile.location;
-  if (monogramEl && profile.monogram) monogramEl.textContent = profile.monogram;
+
+  const photo = (profile.avatarUrl || profile.photoUrl || profile.photo || profile.profilePhoto || '').trim();
+  if (photo) {
+    if (avatarImg) {
+      avatarImg.src = photo;
+      avatarImg.alt = profile.name || 'Adeepa Marambage';
+      avatarImg.style.display = 'block';
+    }
+    if (monogramEl) {
+      monogramEl.style.display = 'none';
+    }
+  } else {
+    if (avatarImg) {
+      avatarImg.style.display = 'none';
+      avatarImg.src = '';
+    }
+    if (monogramEl) {
+      monogramEl.style.display = 'flex';
+      if (profile.monogram) monogramEl.textContent = profile.monogram;
+    }
+  }
+
   if (bioSummaryEl) {
     bioSummaryEl.textContent = `A passionate technologist pursuing ${profile.degree} at ${profile.institution}. Dedicated to building production-grade web systems, resilient relational schemas, and responsive user interfaces with zero framework bloat.`;
   }
+}
+
+/* Render Contact Details */
+function renderContact(profile) {
+  if (!profile) return;
+  const emailVal = document.getElementById('contact-email-val');
+  const heroEmail = document.getElementById('hero-email-link');
+  const githubLink = document.getElementById('contact-github-link');
+  const locationVal = document.getElementById('contact-location-val');
+
+  if (emailVal && profile.email) emailVal.textContent = profile.email;
+  if (heroEmail && profile.email) heroEmail.href = `mailto:${profile.email}`;
+  if (githubLink && profile.github) {
+    githubLink.href = profile.github;
+    githubLink.textContent = profile.github.replace(/^https?:\/\//, '');
+  }
+  if (locationVal && profile.location) locationVal.textContent = profile.location;
 }
 
 /* Render Impact Stats */
@@ -359,7 +400,7 @@ function renderStats(stats) {
 
   container.innerHTML = stats.map(stat => `
     <div class="stat-card reveal">
-      <div class="stat-value" data-target="${stat.numeric || 0}">${stat.value}</div>
+      <div class="stat-value" data-target="${stat.numeric || 0}" data-final="${escapeHtml(stat.value)}">${stat.value}</div>
       <div class="stat-label">${escapeHtml(stat.label)}</div>
     </div>
   `).join('');
@@ -580,11 +621,12 @@ function animateCounter(element, target) {
   let count = 0;
   const duration = 1200;
   const stepTime = Math.max(Math.floor(duration / target), 20);
+  const finalVal = element.getAttribute('data-final');
 
   const timer = setInterval(() => {
     count += Math.ceil(target / (duration / stepTime));
     if (count >= target) {
-      element.textContent = target === 10 ? '10+' : target === 100 ? '100%' : `${target}+`;
+      element.textContent = finalVal || (target === 10 ? '10+' : target === 100 ? '100%' : `${target}`);
       clearInterval(timer);
     } else {
       element.textContent = `${count}`;

@@ -16,6 +16,7 @@ const DEFAULT_PORTFOLIO_DATA = {
     name: "Adeepa Marambage",
     shortName: "Adeepa",
     monogram: "<AM />",
+    avatarUrl: "",
     role: "Full-Stack Software Engineer & BICT Honours Undergraduate",
     institution: "University of Sri Jayewardenepura",
     degree: "Bachelor of Information and Communication Technology (BICT) Honours",
@@ -327,6 +328,26 @@ function updateAdminHeaderBranding(monogram, shortName) {
   if (adminLogoText && shortName) adminLogoText.textContent = shortName;
 }
 
+function updateAdminAvatarPreview(url, monogram) {
+  const previewImg = document.getElementById('admin-avatar-preview');
+  const fallback = document.getElementById('admin-avatar-fallback');
+  if (fallback && monogram) fallback.textContent = monogram;
+
+  if (url && url.trim() !== '') {
+    if (previewImg) {
+      previewImg.src = url;
+      previewImg.style.display = 'block';
+    }
+    if (fallback) fallback.style.display = 'none';
+  } else {
+    if (previewImg) {
+      previewImg.src = '';
+      previewImg.style.display = 'none';
+    }
+    if (fallback) fallback.style.display = 'flex';
+  }
+}
+
 function populateProfileForm() {
   const p = currentData.profile || {};
   setValue('profile-name', p.name);
@@ -341,6 +362,10 @@ function populateProfileForm() {
   setValue('profile-status', p.status);
   setValue('profile-bio', p.bioSummary);
   setValue('profile-typewriter', (p.typewriterRoles || []).join('\n'));
+
+  const avatarUrl = p.avatarUrl || p.photoUrl || p.photo || p.profilePhoto || '';
+  setValue('profile-photo-url', avatarUrl);
+  updateAdminAvatarPreview(avatarUrl, p.monogram || '<ADM />');
 
   updateAdminHeaderBranding(p.monogram || '<AM />', p.shortName || 'Adeepa');
 }
@@ -612,10 +637,13 @@ function initGlobalActions() {
     const rawShortName = getValue('profile-shortname') || 'Adeepa';
     updateAdminHeaderBranding(rawMonogram, rawShortName);
 
+    const photoUrl = getValue('profile-photo-url') || (currentData.profile && (currentData.profile.avatarUrl || currentData.profile.photoUrl)) || '';
+
     currentData.profile = {
       name: getValue('profile-name'),
       shortName: rawShortName,
       monogram: rawMonogram,
+      avatarUrl: photoUrl,
       role: getValue('profile-degree'),
       degree: getValue('profile-degree'),
       institution: getValue('profile-institution'),
@@ -642,12 +670,70 @@ function initGlobalActions() {
   const shortNameInput = document.getElementById('profile-shortname');
   if (monoInput) {
     monoInput.addEventListener('input', (e) => {
-      updateAdminHeaderBranding(e.target.value || '<AM />', getValue('profile-shortname') || 'Adeepa');
+      const val = e.target.value || '<AM />';
+      updateAdminHeaderBranding(val, getValue('profile-shortname') || 'Adeepa');
+      const photoVal = getValue('profile-photo-url');
+      if (!photoVal) {
+        updateAdminAvatarPreview('', val);
+      }
     });
   }
   if (shortNameInput) {
     shortNameInput.addEventListener('input', (e) => {
       updateAdminHeaderBranding(getValue('profile-monogram') || '<AM />', e.target.value || 'Adeepa');
+    });
+  }
+
+  // Profile Photo Upload & Management Listeners
+  const photoFileInput = document.getElementById('profile-photo-file-input');
+  const photoUrlInput = document.getElementById('profile-photo-url');
+  const removePhotoBtn = document.getElementById('remove-photo-btn');
+
+  if (photoFileInput) {
+    photoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+
+      if (!file.type.startsWith('image/')) {
+        alert('Please select an image file (PNG, JPG, WebP, SVG, etc.).');
+        return;
+      }
+
+      if (file.size > 3 * 1024 * 1024) {
+        alert('Image is larger than 3MB. Please choose a photo under 3MB for smooth browser storage.');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Data = event.target.result;
+        setValue('profile-photo-url', base64Data);
+        if (!currentData.profile) currentData.profile = {};
+        currentData.profile.avatarUrl = base64Data;
+        updateAdminAvatarPreview(base64Data, getValue('profile-monogram') || '<ADM />');
+        showToast('📷 Photo loaded! Click "Save & Apply Live" to update portfolio.');
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  if (photoUrlInput) {
+    photoUrlInput.addEventListener('input', (e) => {
+      const url = e.target.value.trim();
+      if (!currentData.profile) currentData.profile = {};
+      currentData.profile.avatarUrl = url;
+      updateAdminAvatarPreview(url, getValue('profile-monogram') || '<ADM />');
+    });
+  }
+
+  if (removePhotoBtn) {
+    removePhotoBtn.addEventListener('click', () => {
+      setValue('profile-photo-url', '');
+      if (photoFileInput) photoFileInput.value = '';
+      if (!currentData.profile) currentData.profile = {};
+      currentData.profile.avatarUrl = '';
+      updateAdminAvatarPreview('', getValue('profile-monogram') || '<ADM />');
+      showToast('Profile photo removed. Monogram badge will be displayed.');
     });
   }
 

@@ -143,6 +143,42 @@
           <span class="form-help">Syncs with Hero, About, and Contact sections</span>
         </div>
 
+        <!-- Profile Photo / Avatar Management -->
+        <div class="profile-photo-upload-section">
+          <div class="avatar-preview-container">
+            <img id="admin-avatar-preview" class="admin-avatar-preview-img" src="" alt="Avatar Preview" style="display: none;">
+            <div id="admin-avatar-fallback" class="admin-avatar-fallback-badge">&lt;ADM /&gt;</div>
+          </div>
+          <div class="avatar-upload-controls">
+            <label class="form-label" style="margin-bottom: 4px;">Profile Photo / Avatar</label>
+            <p class="form-help" style="margin-bottom: var(--space-3);">
+              Upload an image from your computer (auto-converted to browser-ready format) or provide an image URL. Syncs live to your portfolio About card.
+            </p>
+            <div class="avatar-actions-row">
+              <label for="profile-photo-file-input" class="btn btn-secondary btn-sm" style="cursor: pointer; margin: 0;">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21 15 16 10 5 21"/>
+                </svg>
+                <span>Upload Photo</span>
+              </label>
+              <input type="file" id="profile-photo-file-input" accept="image/*" style="display: none;">
+
+              <button type="button" class="btn btn-tertiary btn-sm" id="remove-photo-btn" style="color: var(--error); border-color: rgba(239, 68, 68, 0.4);">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="3 6 5 6 21 6"/>
+                  <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                </svg>
+                <span>Remove Photo</span>
+              </button>
+            </div>
+            <div class="form-group" style="margin-top: var(--space-3); width: 100%;">
+              <input type="text" class="form-control" id="profile-photo-url" placeholder="Or paste image URL (https://... or data:image/...)">
+            </div>
+          </div>
+        </div>
+
         <div class="admin-form-grid">
           <div class="form-group">
             <label class="form-label" for="profile-name">Full Name</label>
