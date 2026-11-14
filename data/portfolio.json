@@ -1,0 +1,154 @@
+{
+  "profile": {
+    "name": "Adeepa D. Marambage",
+    "shortName": "Adeepa",
+    "monogram": "<ADM />",
+    "role": "Full-Stack Software Engineer & BICT Honours Undergraduate",
+    "institution": "University of Sri Jayewardenepura",
+    "degree": "Bachelor of Information and Communication Technology (BICT) Honours",
+    "location": "Galgamuwa, Sri Lanka",
+    "email": "adeepadmarambage@gmail.com",
+    "github": "https://github.com/AdeepaOfficial",
+    "linkedin": "https://linkedin.com/in/adeepa-marambage",
+    "resumeUrl": "#contact",
+    "status": "Available for Opportunities",
+    "typewriterRoles": [
+      "Full-Stack Software Engineer",
+      "Systems & Web Developer",
+      "Database & API Architect",
+      "BICT Honours Student @ USJ"
+    ],
+    "bioSummary": "Undergraduate technologist with a keen focus on robust software engineering, scalable web architectures, clean code principles, and intuitive user experiences."
+  },
+  "stats": [
+    { "label": "Projects Completed", "value": "10+", "numeric": 10 },
+    { "label": "Code Quality & Git", "value": "100%", "numeric": 100 },
+    { "label": "Core Tech Domains", "value": "4", "numeric": 4 },
+    { "label": "Degree Pursuit", "value": "BICT (Hons)", "numeric": null }
+  ],
+  "skills": {
+    "frontend": {
+      "title": "Frontend Development",
+      "icon": "palette",
+      "accent": "var(--accent-primary)",
+      "items": [
+        "HTML5",
+        "CSS3 / Flexbox & Grid",
+        "JavaScript (ES6+)",
+        "Responsive Web Design",
+        "DOM API & Animations",
+        "UI/UX Design Systems"
+      ]
+    },
+    "backend": {
+      "title": "Backend & Database",
+      "icon": "server",
+      "accent": "var(--accent-secondary)",
+      "items": [
+        "PHP",
+        "MySQL / Relational DB",
+        "RESTful API Development",
+        "Node.js Basics",
+        "CRUD Architecture",
+        "SQL Query Optimization"
+      ]
+    },
+    "systems": {
+      "title": "Architecture & Systems",
+      "icon": "cpu",
+      "accent": "#a855f7",
+      "items": [
+        "Object-Oriented Programming (OOP)",
+        "MVC Pattern",
+        "System Workflow Design",
+        "Clean Code & Modularity",
+        "Data Modeling"
+      ]
+    },
+    "tools": {
+      "title": "DevOps & Tools",
+      "icon": "wrench",
+      "accent": "#10b981",
+      "items": [
+        "Git & GitHub",
+        "Linux / Bash",
+        "Postman",
+        "Vite & Modern Tooling",
+        "VS Code Ecosystem"
+      ]
+    }
+  },
+  "projects": [
+    {
+      "id": "adm-invoice",
+      "title": "ADM Invoice System",
+      "category": "systems",
+      "categoryLabel": "Systems / Web",
+      "description": "Comprehensive invoice and billing management platform featuring automated tax computation, client database tracking, and structured export capabilities.",
+      "tags": ["PHP", "MySQL", "JavaScript", "CSS3", "Invoicing"],
+      "github": "https://github.com/AdeepaOfficial/ADM-Invoice-System",
+      "demo": "",
+      "featured": true,
+      "badge": "Systems & Billing"
+    },
+    {
+      "id": "fixflow",
+      "title": "FixFlow Workflow Engine",
+      "category": "systems",
+      "categoryLabel": "Systems",
+      "description": "Streamlined maintenance and issue tracking workflow engine engineered with clear lifecycle state progression, role handling, and audit trails.",
+      "tags": ["PHP", "JavaScript", "Workflow Systems", "Database Design"],
+      "github": "https://github.com/AdeepaOfficial/FixFlow",
+      "demo": "",
+      "featured": true,
+      "badge": "Workflow Engine"
+    },
+    {
+      "id": "epiclens",
+      "title": "EpicLens System",
+      "category": "web",
+      "categoryLabel": "Web Application",
+      "description": "Interactive photography studio showcase and client booking platform with sleek media galleries and responsive inquiry interface.",
+      "tags": ["HTML5", "Vanilla JavaScript", "CSS Grid", "UI/UX Design"],
+      "github": "https://github.com/AdeepaOfficial/EpicLens-System",
+      "demo": "",
+      "featured": true,
+      "badge": "Media & Booking"
+    },
+    {
+      "id": "iic1153-backend",
+      "title": "iic1153-backend",
+      "category": "backend",
+      "categoryLabel": "Backend / API",
+      "description": "Academic course backend architecture demonstrating structured REST endpoints, relational schema mapping, and modular API service handlers.",
+      "tags": ["PHP", "MySQL", "REST API", "Backend Architecture"],
+      "github": "https://github.com/AdeepaOfficial/iic1153-backend",
+      "demo": "",
+      "featured": false,
+      "badge": "Academic API"
+    }
+  ],
+  "timeline": [
+    {
+      "period": "2023 - Present",
+      "title": "Bachelor of Information and Communication Technology (BICT) Honours",
+      "institution": "University of Sri Jayewardenepura",
+      "description": "Pursuing comprehensive honours degree specializing in software engineering, relational database systems, network protocols, and full-stack web applications.",
+      "type": "education"
+    },
+    {
+      "period": "2023 - 2024",
+      "title": "Full-Stack Project Engineering",
+      "institution": "Independent & Coursework Systems",
+      "description": "Architected and delivered production-grade applications including ADM Invoice System, FixFlow, and EpicLens System using pure web standards and relational backends.",
+      "type": "project"
+    },
+    {
+      "period": "2020 - 2022",
+      "title": "G.C.E. Advanced Level - Technology Stream",
+      "institution": "Foundational Academic Milestones",
+      "description": "Completed secondary education in the Engineering Technology stream with honors, establishing strong foundations in mathematics, algorithmic logic, and computing principles.",
+      "type": "education"
+    }
+  ]
+}

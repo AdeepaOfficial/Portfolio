@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Control Center | Adeepa Marambage Portfolio</title>
+  <meta name="robots" content="noindex, nofollow">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%230a0d14'/><text x='50' y='64' font-family='monospace' font-size='42' font-weight='bold' fill='%2300f2fe' text-anchor='middle'>&lt;AM/&gt;</text></svg>">
+
+  <!-- Google Fonts Preconnect & Stylesheets -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Core & Admin Stylesheets -->
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body data-theme="dark">
+
+  <!-- Passcode Security Gate Overlay -->
+  <div class="passcode-gate-overlay" id="passcode-gate">
+    <div class="passcode-card">
+      <div class="lock-icon-wrapper">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+      </div>
+      <h2 class="passcode-title">Private Control Center</h2>
+      <p class="passcode-subtitle">
+        Enter your private access passcode to manage live portfolio details, projects, skills, and configuration.
+      </p>
+
+      <div class="passcode-input-group">
+        <input type="password" id="passcode-input" class="passcode-input" placeholder="••••" maxlength="16" autofocus autocomplete="off">
+        <button type="button" class="toggle-visibility-btn" id="toggle-visibility-btn" title="Toggle visibility" aria-label="Toggle password visibility">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
+
+      <div class="passcode-error-msg" id="passcode-error"></div>
+
+      <!-- Quick Numeric Keypad -->
+      <div class="keypad-grid">
+        <button type="button" class="keypad-btn" data-val="1">1</button>
+        <button type="button" class="keypad-btn" data-val="2">2</button>
+        <button type="button" class="keypad-btn" data-val="3">3</button>
+        <button type="button" class="keypad-btn" data-val="4">4</button>
+        <button type="button" class="keypad-btn" data-val="5">5</button>
+        <button type="button" class="keypad-btn" data-val="6">6</button>
+        <button type="button" class="keypad-btn" data-val="7">7</button>
+        <button type="button" class="keypad-btn" data-val="8">8</button>
+        <button type="button" class="keypad-btn" data-val="9">9</button>
+        <button type="button" class="keypad-btn" data-val="clear" style="color: var(--error);">C</button>
+        <button type="button" class="keypad-btn" data-val="0">0</button>
+        <button type="button" class="keypad-btn" data-val="enter" style="color: var(--accent-primary);">⏎</button>
+      </div>
+
+      <button type="button" class="btn btn-primary" id="unlock-btn" style="width: 100%; margin-bottom: var(--space-4);">
+        <span>Unlock Dashboard</span>
+      </button>
+
+      <div>
+        <span class="passcode-hint">Default PIN: 2026</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sticky Admin Header -->
+  <header class="admin-header">
+    <div class="container admin-header-content">
+      <div class="admin-brand">
+        <div class="nav-logo" style="margin: 0;">
+          <span class="monogram">&lt;AM /&gt;</span>
+          <span>Admin Portal</span>
+        </div>
+        <span class="admin-badge">Live Sync Active</span>
+      </div>
+
+      <div class="admin-controls-group">
+        <a href="index.html" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm" title="Preview live portfolio in a new tab">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          <span>Preview Site</span>
+        </a>
+        <button type="button" class="btn btn-secondary btn-sm" id="export-json-btn" title="Download updated portfolio.json">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Export JSON</span>
+        </button>
+        <button type="button" class="btn btn-tertiary btn-sm" id="reset-defaults-btn" title="Reset changes back to default portfolio.json">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          <span>Reset Defaults</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-sm" id="save-live-btn" title="Save changes live to browser storage">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          <span>Save &amp; Apply Live</span>
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" id="lock-btn" title="Lock admin session">
+          <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Lock</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Content -->
+  <main class="container admin-main-container">
+    <!-- Tab Navigation -->
+    <nav class="admin-tabs-nav" aria-label="Dashboard Tabs">
+      <button type="button" class="admin-tab-btn active" data-tab="profile">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>Profile &amp; Bio</span>
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="projects">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+        <span>Projects (CRUD)</span>
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="skills">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+        <span>Skills</span>
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="stats">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        <span>Stats &amp; Timeline</span>
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="security">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span>Security PIN</span>
+      </button>
+      <button type="button" class="admin-tab-btn" data-tab="raw">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+        <span>Raw JSON</span>
+      </button>
+    </nav>
+
+    <!-- Tab 1: Profile & Bio -->
+    <section class="admin-tab-panel active" id="tab-profile">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Personal &amp; Contact Details</h3>
+          <span class="form-help">Syncs with Hero, About, and Contact sections</span>
+        </div>
+
+        <div class="admin-form-grid">
+          <div class="form-group">
+            <label class="form-label" for="profile-name">Full Name</label>
+            <input type="text" class="form-control" id="profile-name">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-shortname">Short Name</label>
+            <input type="text" class="form-control" id="profile-shortname">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-monogram">Monogram Logo</label>
+            <input type="text" class="form-control" id="profile-monogram" placeholder="<AM />">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-degree">Degree / Title</label>
+            <input type="text" class="form-control" id="profile-degree">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-institution">Institution / University</label>
+            <input type="text" class="form-control" id="profile-institution">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-location">Location</label>
+            <input type="text" class="form-control" id="profile-location">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-email">Email Address</label>
+            <input type="email" class="form-control" id="profile-email">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-status">Availability Status</label>
+            <input type="text" class="form-control" id="profile-status" placeholder="Available for Opportunities">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-github">GitHub Profile URL</label>
+            <input type="url" class="form-control" id="profile-github">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="profile-linkedin">LinkedIn Profile URL</label>
+            <input type="url" class="form-control" id="profile-linkedin">
+          </div>
+        </div>
+
+        <div class="admin-form-grid single-col" style="margin-top: var(--space-6);">
+          <div class="form-group">
+            <label class="form-label" for="profile-typewriter">Typewriter Subtitle Roles (One per line)</label>
+            <textarea class="form-control" id="profile-typewriter" style="min-height: 100px; font-family: var(--font-mono);"></textarea>
+            <span class="form-help">Each line animates sequentially in the Hero section.</span>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" for="profile-bio">Biography Summary</label>
+            <textarea class="form-control" id="profile-bio" style="min-height: 100px;"></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 2: Projects (CRUD) -->
+    <section class="admin-tab-panel" id="tab-projects">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Featured Projects Management</h3>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openProjectModal(null)">
+            <span>+ Add New Project</span>
+          </button>
+        </div>
+
+        <div class="projects-manager-list" id="projects-list-container">
+          <!-- Populated by admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 3: Skills -->
+    <section class="admin-tab-panel" id="tab-skills">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Technical Skills Categories</h3>
+          <span class="form-help">Add, edit, or remove technology tags per domain</span>
+        </div>
+
+        <div class="skills-manager-grid" id="skills-manager-container">
+          <!-- Populated by admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 4: Stats & Timeline -->
+    <section class="admin-tab-panel" id="tab-stats">
+      <!-- Stats Editor -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Key Impact Statistics</h3>
+          <span class="form-help">4 numeric counter metrics shown on the portfolio</span>
+        </div>
+
+        <div class="admin-form-grid">
+          <!-- Stat 0 -->
+          <div class="form-group">
+            <label class="form-label">Metric 1 (Projects)</label>
+            <input type="text" class="form-control" id="stat-val-0" placeholder="10+">
+            <input type="text" class="form-control" id="stat-lbl-0" placeholder="Projects Completed" style="margin-top: 6px;">
+            <input type="number" class="form-control" id="stat-num-0" placeholder="Numeric: 10" style="margin-top: 6px;">
+          </div>
+          <!-- Stat 1 -->
+          <div class="form-group">
+            <label class="form-label">Metric 2 (Quality)</label>
+            <input type="text" class="form-control" id="stat-val-1" placeholder="100%">
+            <input type="text" class="form-control" id="stat-lbl-1" placeholder="Code Quality & Git" style="margin-top: 6px;">
+            <input type="number" class="form-control" id="stat-num-1" placeholder="Numeric: 100" style="margin-top: 6px;">
+          </div>
+          <!-- Stat 2 -->
+          <div class="form-group">
+            <label class="form-label">Metric 3 (Domains)</label>
+            <input type="text" class="form-control" id="stat-val-2" placeholder="4">
+            <input type="text" class="form-control" id="stat-lbl-2" placeholder="Core Tech Domains" style="margin-top: 6px;">
+            <input type="number" class="form-control" id="stat-num-2" placeholder="Numeric: 4" style="margin-top: 6px;">
+          </div>
+          <!-- Stat 3 -->
+          <div class="form-group">
+            <label class="form-label">Metric 4 (Pursuit)</label>
+            <input type="text" class="form-control" id="stat-val-3" placeholder="BICT (Hons)">
+            <input type="text" class="form-control" id="stat-lbl-3" placeholder="Degree Pursuit" style="margin-top: 6px;">
+            <input type="number" class="form-control" id="stat-num-3" placeholder="Numeric (Optional)" style="margin-top: 6px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Timeline Editor -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Academic &amp; Project Journey Milestones</h3>
+          <button type="button" class="btn btn-primary btn-sm" onclick="openTimelineModal(null)">
+            <span>+ Add Milestone</span>
+          </button>
+        </div>
+
+        <div class="projects-manager-list" id="timeline-list-container">
+          <!-- Populated by admin.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 5: Security PIN -->
+    <section class="admin-tab-panel" id="tab-security">
+      <div class="admin-card" style="max-width: 600px;">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Update Private Access Passcode</h3>
+          <span class="form-help">Customize the PIN used to unlock this page</span>
+        </div>
+
+        <form id="change-passcode-form">
+          <div class="form-group" style="margin-bottom: var(--space-4);">
+            <label class="form-label" for="current-pin">Current Passcode</label>
+            <input type="password" class="form-control" id="current-pin" required placeholder="Default is 2026">
+          </div>
+          <div class="form-group" style="margin-bottom: var(--space-4);">
+            <label class="form-label" for="new-pin">New Passcode (min 4 characters)</label>
+            <input type="password" class="form-control" id="new-pin" required minlength="4">
+          </div>
+          <div class="form-group" style="margin-bottom: var(--space-6);">
+            <label class="form-label" for="confirm-pin">Confirm New Passcode</label>
+            <input type="password" class="form-control" id="confirm-pin" required minlength="4">
+          </div>
+
+          <button type="submit" class="btn btn-primary">
+            <span>Update Passcode</span>
+          </button>
+        </form>
+
+        <div style="margin-top: var(--space-8); padding-top: var(--space-4); border-top: 1px solid var(--border-subtle);">
+          <p class="form-help">
+            🔒 Passcode is securely saved in browser storage. Clearing browser data will reset the PIN back to the default <strong>2026</strong>.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 6: Raw JSON Editor -->
+    <section class="admin-tab-panel" id="tab-raw">
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <h3 class="admin-card-title">Direct JSON Code Editor</h3>
+          <div style="display: flex; gap: var(--space-2);">
+            <button type="button" class="btn btn-secondary btn-sm" id="format-raw-btn">Format JSON</button>
+            <button type="button" class="btn btn-primary btn-sm" id="apply-raw-btn">Apply &amp; Save Live</button>
+          </div>
+        </div>
+
+        <textarea id="raw-json-editor" class="raw-json-textarea" spellcheck="false"></textarea>
+      </div>
+    </section>
+  </main>
+
+  <!-- Project Edit / Create Modal -->
+  <div class="admin-modal-overlay" id="project-modal" role="dialog" aria-modal="true">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="project-modal-title">Edit Project</h3>
+        <button type="button" class="modal-close-btn" onclick="closeProjectModal()">&times;</button>
+      </div>
+
+      <form id="project-form">
+        <input type="hidden" id="modal-proj-id">
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-proj-title">Project Title *</label>
+          <input type="text" class="form-control" id="modal-proj-title" required>
+        </div>
+
+        <div class="admin-form-grid" style="margin-bottom: var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="modal-proj-category">Category Key</label>
+            <select class="form-control" id="modal-proj-category">
+              <option value="systems">Systems</option>
+              <option value="web">Web Application</option>
+              <option value="backend">Backend / API</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-proj-catlabel">Category Display Label</label>
+            <input type="text" class="form-control" id="modal-proj-catlabel" placeholder="e.g. Systems / Web">
+          </div>
+        </div>
+
+        <div class="admin-form-grid" style="margin-bottom: var(--space-4);">
+          <div class="form-group">
+            <label class="form-label" for="modal-proj-badge">Badge Label</label>
+            <input type="text" class="form-control" id="modal-proj-badge" placeholder="e.g. Systems & Billing">
+          </div>
+          <div class="form-group" style="display: flex; align-items: center; gap: 8px; margin-top: 28px;">
+            <input type="checkbox" id="modal-proj-featured" style="width: 18px; height: 18px;">
+            <label for="modal-proj-featured" style="font-weight: 600; cursor: pointer;">Featured Project</label>
+          </div>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-proj-desc">Description</label>
+          <textarea class="form-control" id="modal-proj-desc" style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-proj-tags">Technology Tags (Comma-separated)</label>
+          <input type="text" class="form-control" id="modal-proj-tags" placeholder="PHP, MySQL, JavaScript, CSS3">
+        </div>
+
+        <div class="admin-form-grid" style="margin-bottom: var(--space-6);">
+          <div class="form-group">
+            <label class="form-label" for="modal-proj-github">GitHub URL</label>
+            <input type="url" class="form-control" id="modal-proj-github">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="modal-proj-demo">Live Demo URL (Optional)</label>
+            <input type="url" class="form-control" id="modal-proj-demo" placeholder="https://...">
+          </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+          <button type="button" class="btn btn-secondary" onclick="closeProjectModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Project</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Timeline Edit / Create Modal -->
+  <div class="admin-modal-overlay" id="timeline-modal" role="dialog" aria-modal="true">
+    <div class="admin-modal-card">
+      <div class="admin-modal-header">
+        <h3 id="timeline-modal-title">Edit Milestone</h3>
+        <button type="button" class="modal-close-btn" onclick="closeTimelineModal()">&times;</button>
+      </div>
+
+      <form id="timeline-form">
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-time-period">Time Period *</label>
+          <input type="text" class="form-control" id="modal-time-period" required placeholder="e.g. 2023 - Present">
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-time-title">Title / Degree *</label>
+          <input type="text" class="form-control" id="modal-time-title" required>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-time-inst">Institution / Organization</label>
+          <input type="text" class="form-control" id="modal-time-inst">
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-4);">
+          <label class="form-label" for="modal-time-desc">Description</label>
+          <textarea class="form-control" id="modal-time-desc" style="min-height: 80px;"></textarea>
+        </div>
+
+        <div class="form-group" style="margin-bottom: var(--space-6);">
+          <label class="form-label" for="modal-time-type">Type</label>
+          <select class="form-control" id="modal-time-type">
+            <option value="education">Education</option>
+            <option value="project">Project / Experience</option>
+          </select>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: var(--space-3);">
+          <button type="button" class="btn btn-secondary" onclick="closeTimelineModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Milestone</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Admin Toast Notification -->
+  <aside class="toast-notification" id="admin-toast" role="status" aria-live="polite">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+      <polyline points="22 4 12 14.01 9 11.01"/>
+    </svg>
+    <span id="admin-toast-msg">Operation completed!</span>
+  </aside>
+
+  <!-- Admin JavaScript Engine -->
+  <script src="js/admin.js" defer></script>
+</body>
+</html>
