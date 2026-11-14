@@ -125,6 +125,11 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
         <span>Stats &amp; Timeline</span>
       </button>
+      <button type="button" class="admin-tab-btn" data-tab="inbox" id="tab-btn-inbox">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        <span>Messages Inbox</span>
+        <span class="inbox-badge-count" id="inbox-count-badge" style="display: none;">0</span>
+      </button>
       <button type="button" class="admin-tab-btn" data-tab="security">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
         <span>Security PIN</span>
@@ -323,7 +328,117 @@
       </div>
     </section>
 
-    <!-- Tab 5: Security PIN -->
+    <!-- Tab 5: Messages Inbox & Contact Settings -->
+    <section class="admin-tab-panel" id="tab-inbox">
+      <!-- Card 1: Form API & Email Forwarding Settings -->
+      <div class="admin-card" style="margin-bottom: var(--space-8);">
+        <div class="admin-card-header">
+          <div>
+            <h3 class="admin-card-title">Contact Form &amp; Email Dispatch API</h3>
+            <span class="form-help">Option A: Route visitor messages directly to your email inbox (adeepadmarambage@gmail.com)</span>
+          </div>
+          <button type="button" class="btn btn-primary btn-sm" id="save-contact-settings-btn">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+            <span>Save Email Settings</span>
+          </button>
+        </div>
+
+        <div class="inbox-api-banner">
+          <div class="inbox-api-banner-icon">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="inbox-api-banner-text">
+            <strong>Direct Serverless Email Delivery (Web3Forms):</strong>
+            <p>
+              When visitors submit your portfolio's contact form, their message is sent asynchronously to your designated email and also saved directly to the local inbox below. To activate instant email delivery with zero backend servers, enter your free <strong>Web3Forms Access Key</strong>.
+            </p>
+          </div>
+        </div>
+
+        <form id="contact-settings-form" onsubmit="event.preventDefault();">
+          <div class="admin-form-grid" style="margin-bottom: var(--space-4);">
+            <div class="form-group">
+              <label class="form-label" for="setting-form-provider">Active Form Dispatch Provider</label>
+              <select class="form-control" id="setting-form-provider">
+                <option value="web3forms">Web3Forms (Recommended - Free, instant delivery to Gmail)</option>
+                <option value="formspree">Formspree (Alternative Form Endpoint)</option>
+                <option value="mailto">Direct mailto: Link Only (Launches mail client)</option>
+              </select>
+              <span class="form-help">Web3Forms sends directly to your email inbox without redirects or popups.</span>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="setting-notification-email">Notification Email Address</label>
+              <input type="email" class="form-control" id="setting-notification-email" placeholder="adeepadmarambage@gmail.com" value="adeepadmarambage@gmail.com">
+              <span class="form-help">Destination address where visitor messages are sent.</span>
+            </div>
+          </div>
+
+          <div class="admin-form-grid" style="margin-bottom: var(--space-4);">
+            <div class="form-group" id="web3forms-key-group">
+              <label class="form-label" for="setting-web3forms-key">
+                Web3Forms Access Key
+                <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer" class="link-external-hint" style="color: var(--accent-primary); margin-left: 8px; font-weight: normal; font-size: 0.8125rem;">
+                  Get free key at web3forms.com &nearr;
+                </a>
+              </label>
+              <input type="text" class="form-control" id="setting-web3forms-key" placeholder="e.g. 5a1b2c3d-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+              <span class="form-help">1. Visit <a href="https://web3forms.com" target="_blank" rel="noopener noreferrer" style="color: var(--accent-primary);">web3forms.com</a> &rarr; 2. Enter <code>adeepadmarambage@gmail.com</code> &rarr; 3. Paste the key you receive here.</span>
+            </div>
+
+            <div class="form-group" id="formspree-id-group">
+              <label class="form-label" for="setting-formspree-id">
+                Formspree Form ID (Optional)
+                <a href="https://formspree.io" target="_blank" rel="noopener noreferrer" class="link-external-hint" style="color: var(--accent-primary); margin-left: 8px; font-weight: normal; font-size: 0.8125rem;">
+                  formspree.io &nearr;
+                </a>
+              </label>
+              <input type="text" class="form-control" id="setting-formspree-id" placeholder="e.g. xpzgknpq">
+              <span class="form-help">Only needed if provider is switched to Formspree.</span>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Card 2: Received Messages Inbox -->
+      <div class="admin-card">
+        <div class="admin-card-header">
+          <div>
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <h3 class="admin-card-title">Received Messages</h3>
+              <span class="inbox-status-pill" id="inbox-total-count">0 Messages</span>
+            </div>
+            <span class="form-help">Submissions received via your portfolio contact form stored in your browser</span>
+          </div>
+
+          <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+            <button type="button" class="btn btn-secondary btn-sm" id="export-messages-btn" title="Download messages history as JSON">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Export Inbox</span>
+            </button>
+            <button type="button" class="btn btn-tertiary btn-sm" id="clear-inbox-btn" style="color: var(--error);" title="Clear all stored messages">
+              <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+              <span>Clear Inbox</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Search / Filter toolbar -->
+        <div class="inbox-toolbar">
+          <div class="inbox-search-box">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" id="inbox-search-input" placeholder="Search by sender, email, subject, or message content...">
+          </div>
+        </div>
+
+        <!-- Messages Container -->
+        <div id="inbox-messages-container" class="inbox-messages-list">
+          <!-- Dynamically populated or empty state -->
+        </div>
+      </div>
+    </section>
+
+    <!-- Tab 6: Security PIN -->
     <section class="admin-tab-panel" id="tab-security">
       <div class="admin-card" style="max-width: 600px;">
         <div class="admin-card-header">

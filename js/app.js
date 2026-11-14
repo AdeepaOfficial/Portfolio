@@ -141,7 +141,13 @@ const FALLBACK_PORTFOLIO_DATA = {
       description: "Completed secondary education in the Engineering Technology stream with honors, establishing strong foundations in mathematics, algorithmic logic, and computing principles.",
       type: "education"
     }
-  ]
+  ],
+  contactSettings: {
+    provider: "web3forms",
+    accessKey: "",
+    formspreeId: "",
+    notificationEmail: "adeepadmarambage@gmail.com"
+  }
 };
 
 // SVG Icon Library for dynamic rendering
@@ -273,6 +279,8 @@ async function initPortfolioData() {
       console.warn('Using embedded portfolio fallback data (Offline / file:// mode):', err);
     }
   }
+
+  window.currentPortfolioData = data;
 
   // Hydrate UI sections
   renderBranding(data.profile);
@@ -716,7 +724,7 @@ function initContactForm() {
       }
     });
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', async (e) => {
       e.preventDefault();
       let isValid = true;
 
@@ -741,17 +749,149 @@ function initContactForm() {
 
       if (!isValid) return;
 
+      const name = nameInput.value.trim();
+      const email = emailInput.value.trim();
+      const subject = subjectInput.value.trim() || `Inquiry from ${name}`;
+      const message = messageInput.value.trim();
       const recipient = 'adeepadmarambage@gmail.com';
-      const subject = encodeURIComponent(subjectInput.value.trim() || `Inquiry from ${nameInput.value.trim()}`);
-      const body = encodeURIComponent(
-        `Hi Adeepa,\n\nName: ${nameInput.value.trim()}\nEmail: ${emailInput.value.trim()}\n\nMessage:\n${messageInput.value.trim()}`
-      );
 
-      // Trigger mailto intent
-      const mailtoUrl = `mailto:${recipient}?subject=${subject}&body=${body}`;
+      // 1. Record message in local inbox backup (viewable in admin.html)
+      const messageRecord = {
+        id: 'msg_' + Date.now().toString(36),
+        name,
+        email,
+        subject,
+        message,
+        timestamp: new Date().toISOString(),
+        read: false
+      };
+
+      try {
+        const inbox = JSON.parse(localStorage.getItem('portfolio_inbox_messages') || '[]');
+        inbox.unshift(messageRecord);
+        localStorage.setItem('portfolio_inbox_messages', JSON.stringify(inbox));
+      } catch (err) {
+        console.warn('Failed to save to local inbox:', err);
+      }
+
+      // 2. Determine active submission settings (Web3Forms / Formspree)
+      let contactSettings = null;
+      try {
+        const customData = JSON.parse(localStorage.getItem('portfolio_custom_data') || 'null');
+        contactSettings = (customData && customData.contactSettings) || null;
+      } catch (e) {}
+
+      if (!contactSettings && typeof window.currentPortfolioData !== 'undefined') {
+        contactSettings = window.currentPortfolioData.contactSettings;
+      }
+
+      const submitBtn = document.getElementById('send-message-btn');
+      const btnText = document.getElementById('send-btn-text');
+
+      const accessKey = contactSettings && contactSettings.accessKey ? contactSettings.accessKey.trim() : '';
+      const formspreeId = contactSettings && contactSettings.formspreeId ? contactSettings.formspreeId.trim() : '';
+
+      // Direct Web Submission via Web3Forms
+      if (accessKey) {
+        if (submitBtn) submitBtn.disabled = true;
+        if (btnText) btnText.textContent = 'Sending...';
+
+        try {
+          const res = await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+              access_key: accessKey,
+              name,
+              email,
+              subject,
+              message,
+              from_name: `${name} (Portfolio Inquiry)`
+            })
+          });
+
+          const resData = await res.json();
+          if (resData.success) {
+            // Update status in local storage
+            try {
+              const inbox = JSON.parse(localStorage.getItem('portfolio_inbox_messages') || '[]');
+              if (inbox.length > 0 && inbox[0].id === messageRecord.id) {
+                inbox[0].status = 'delivered_web3forms';
+                localStorage.setItem('portfolio_inbox_messages', JSON.stringify(inbox));
+              }
+            } catch (e) {}
+
+            showToast('🎉 Message sent directly to Adeepa! Check inbox soon.');
+            form.reset();
+            return;
+          } else {
+            throw new Error(resData.message || 'Submission failed');
+          }
+        } catch (err) {
+          console.warn('Web3Forms dispatch error, falling back to mail client:', err);
+          showToast('⚠️ Online sending error. Opening email client fallback...');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (btnText) btnText.textContent = 'Send Message';
+        }
+      } else if (formspreeId) {
+        // Direct Web Submission via Formspree
+        if (submitBtn) submitBtn.disabled = true;
+        if (btnText) btnText.textContent = 'Sending...';
+
+        try {
+          const res = await fetch(`https://formspree.io/f/${formspreeId}`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify({ name, email, subject, message })
+          });
+
+          if (res.ok) {
+            try {
+              const inbox = JSON.parse(localStorage.getItem('portfolio_inbox_messages') || '[]');
+              if (inbox.length > 0 && inbox[0].id === messageRecord.id) {
+                inbox[0].status = 'delivered_formspree';
+                localStorage.setItem('portfolio_inbox_messages', JSON.stringify(inbox));
+              }
+            } catch (e) {}
+
+            showToast('🎉 Message sent directly to Adeepa! Check inbox soon.');
+            form.reset();
+            return;
+          } else {
+            throw new Error('Formspree responded with error');
+          }
+        } catch (err) {
+          console.warn('Formspree dispatch error, falling back to mail client:', err);
+          showToast('⚠️ Online sending error. Opening email client fallback...');
+        } finally {
+          if (submitBtn) submitBtn.disabled = false;
+          if (btnText) btnText.textContent = 'Send Message';
+        }
+      }
+
+      // Update status to mailto
+      try {
+        const inbox = JSON.parse(localStorage.getItem('portfolio_inbox_messages') || '[]');
+        if (inbox.length > 0 && inbox[0].id === messageRecord.id) {
+          inbox[0].status = 'mailto';
+          localStorage.setItem('portfolio_inbox_messages', JSON.stringify(inbox));
+        }
+      } catch (e) {}
+
+      // Fallback: mailto client intent
+      const mailtoUrl = `mailto:${recipient}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(
+        `Hi Adeepa,\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`
+      )}`;
       window.location.href = mailtoUrl;
 
-      showToast('🚀 Message drafted! Opening your email client...');
+      showToast('🚀 Message saved to local inbox & drafted in your email app!');
       form.reset();
     });
   }

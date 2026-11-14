@@ -138,7 +138,13 @@ const DEFAULT_PORTFOLIO_DATA = {
       description: "Completed secondary education in the Engineering Technology stream with honors, establishing strong foundations in mathematics, algorithmic logic, and computing principles.",
       type: "education"
     }
-  ]
+  ],
+  contactSettings: {
+    provider: "web3forms",
+    accessKey: "",
+    formspreeId: "",
+    notificationEmail: "adeepadmarambage@gmail.com"
+  }
 };
 
 // Global active portfolio data state
@@ -284,6 +290,8 @@ function initTabNavigation() {
 
       if (targetTab === 'raw') {
         syncToRawJsonEditor();
+      } else if (targetTab === 'inbox') {
+        renderInboxMessages();
       }
     });
   });
@@ -315,9 +323,11 @@ async function loadInitialData() {
 
   populateProfileForm();
   populateStatsForm();
+  populateContactSettings();
   renderSkillsManager();
   renderProjectsManager();
   renderTimelineManager();
+  renderInboxMessages();
   syncToRawJsonEditor();
 }
 
@@ -663,6 +673,14 @@ function initGlobalActions() {
       label: getValue(`stat-lbl-${i}`),
       numeric: getValue(`stat-num-${i}`) ? parseInt(getValue(`stat-num-${i}`), 10) : null
     }));
+
+    // Gather Contact Form & API Settings
+    currentData.contactSettings = {
+      provider: getValue('setting-form-provider') || (currentData.contactSettings && currentData.contactSettings.provider) || 'web3forms',
+      accessKey: getValue('setting-web3forms-key') || (currentData.contactSettings && currentData.contactSettings.accessKey) || '',
+      formspreeId: getValue('setting-formspree-id') || (currentData.contactSettings && currentData.contactSettings.formspreeId) || '',
+      notificationEmail: getValue('setting-notification-email') || (currentData.contactSettings && currentData.contactSettings.notificationEmail) || 'adeepadmarambage@gmail.com'
+    };
   }
 
   // Real-time branding input listeners
@@ -800,9 +818,11 @@ function initGlobalActions() {
           localStorage.setItem('portfolio_custom_data', JSON.stringify(currentData, null, 2));
           populateProfileForm();
           populateStatsForm();
+          populateContactSettings();
           renderSkillsManager();
           renderProjectsManager();
           renderTimelineManager();
+          renderInboxMessages();
           showToast('✓ Raw JSON successfully applied & saved live!');
         } else {
           alert('JSON structure is missing required "profile" or "projects" top-level keys.');
@@ -812,6 +832,43 @@ function initGlobalActions() {
       }
     });
   }
+
+  // Contact Form & Email Settings Listener
+  const saveContactBtn = document.getElementById('save-contact-settings-btn');
+  if (saveContactBtn) {
+    saveContactBtn.addEventListener('click', () => {
+      gatherFormData();
+      localStorage.setItem('portfolio_custom_data', JSON.stringify(currentData, null, 2));
+      syncToRawJsonEditor();
+      showToast('🚀 Contact & Email settings saved live!');
+    });
+  }
+
+  // Inbox Toolbar Listeners
+  const inboxSearchInput = document.getElementById('inbox-search-input');
+  if (inboxSearchInput) {
+    inboxSearchInput.addEventListener('input', (e) => {
+      renderInboxMessages(e.target.value.trim());
+    });
+  }
+
+  const exportMessagesBtn = document.getElementById('export-messages-btn');
+  if (exportMessagesBtn) {
+    exportMessagesBtn.addEventListener('click', exportInboxMessages);
+  }
+
+  const clearInboxBtn = document.getElementById('clear-inbox-btn');
+  if (clearInboxBtn) {
+    clearInboxBtn.addEventListener('click', clearAllInboxMessages);
+  }
+
+  // Cross-tab Synchronization for Real-time Inbox Refresh
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'portfolio_inbox_messages') {
+      const searchVal = getValue('inbox-search-input');
+      renderInboxMessages(searchVal);
+    }
+  });
 }
 
 function syncToRawJsonEditor() {
@@ -819,6 +876,216 @@ function syncToRawJsonEditor() {
   if (editor) {
     editor.value = JSON.stringify(currentData, null, 2);
   }
+}
+
+/* ==========================================================================
+   6. Messages Inbox & Contact Settings Engine
+   ========================================================================== */
+function populateContactSettings() {
+  const cs = currentData.contactSettings || {};
+  setValue('setting-form-provider', cs.provider || 'web3forms');
+  setValue('setting-notification-email', cs.notificationEmail || 'adeepadmarambage@gmail.com');
+  setValue('setting-web3forms-key', cs.accessKey || '');
+  setValue('setting-formspree-id', cs.formspreeId || '');
+}
+
+function getStoredMessages() {
+  try {
+    const raw = localStorage.getItem('portfolio_inbox_messages');
+    return raw ? JSON.parse(raw) : [];
+  } catch (e) {
+    console.warn('Failed to parse portfolio_inbox_messages from localStorage:', e);
+    return [];
+  }
+}
+
+function updateInboxBadge(count) {
+  const badge = document.getElementById('inbox-count-badge');
+  const totalEl = document.getElementById('inbox-total-count');
+
+  if (badge) {
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : count;
+      badge.style.display = 'inline-flex';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+
+  if (totalEl) {
+    totalEl.textContent = `${count} Message${count === 1 ? '' : 's'}`;
+  }
+}
+
+function renderInboxMessages(searchTerm = '') {
+  const container = document.getElementById('inbox-messages-container');
+  if (!container) return;
+
+  const allMessages = getStoredMessages();
+  updateInboxBadge(allMessages.length);
+
+  let messages = allMessages;
+  if (searchTerm) {
+    const term = searchTerm.toLowerCase();
+    messages = messages.filter(m => 
+      (m.name && m.name.toLowerCase().includes(term)) ||
+      (m.email && m.email.toLowerCase().includes(term)) ||
+      (m.subject && m.subject.toLowerCase().includes(term)) ||
+      (m.message && m.message.toLowerCase().includes(term))
+    );
+  }
+
+  if (allMessages.length === 0) {
+    container.innerHTML = `
+      <div class="inbox-empty-state">
+        <div class="inbox-empty-icon">
+          <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </div>
+        <h4>No Messages Yet</h4>
+        <p>When visitors submit inquiries through your live portfolio contact form, they will appear right here and will be forwarded directly to your email.</p>
+      </div>
+    `;
+    return;
+  }
+
+  if (messages.length === 0) {
+    container.innerHTML = `
+      <div class="inbox-empty-state" style="padding: var(--space-8) var(--space-4);">
+        <h4>No Matching Messages</h4>
+        <p>No messages match your search filter "${escapeHtml(searchTerm)}". Try clearing your search.</p>
+      </div>
+    `;
+    return;
+  }
+
+  // Sort newest first
+  const sorted = [...messages].sort((a, b) => new Date(b.timestamp || 0) - new Date(a.timestamp || 0));
+
+  container.innerHTML = sorted.map(msg => {
+    const dateStr = msg.timestamp ? new Date(msg.timestamp).toLocaleString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    }) : 'Recently';
+
+    const senderInitials = (msg.name || 'Visitor')
+      .split(' ')
+      .filter(Boolean)
+      .map(n => n[0])
+      .join('')
+      .toUpperCase()
+      .substring(0, 2) || 'AM';
+
+    let deliveryBadge = '💾 Stored in Local Inbox';
+    if (msg.status === 'delivered_web3forms') {
+      deliveryBadge = '⚡ Delivered via Web3Forms';
+    } else if (msg.status === 'delivered_formspree') {
+      deliveryBadge = '⚡ Delivered via Formspree';
+    } else if (msg.status === 'mailto') {
+      deliveryBadge = '✉️ Mailto Fallback';
+    }
+
+    const replySubject = encodeURIComponent('Re: ' + (msg.subject || 'Portfolio Inquiry'));
+    const mailtoLink = `mailto:${encodeURIComponent(msg.email || '')}?subject=${replySubject}`;
+
+    return `
+      <article class="inbox-message-card" data-msg-id="${escapeHtml(msg.id)}">
+        <div class="inbox-card-top">
+          <div class="inbox-sender-group">
+            <div class="inbox-sender-avatar">${escapeHtml(senderInitials)}</div>
+            <div class="inbox-sender-details">
+              <h4>${escapeHtml(msg.name || 'Anonymous Visitor')}</h4>
+              <a href="${mailtoLink}" class="inbox-sender-email" title="Click to compose email">${escapeHtml(msg.email || 'No email provided')}</a>
+            </div>
+          </div>
+
+          <div class="inbox-meta-right">
+            <span class="inbox-delivery-tag">${escapeHtml(deliveryBadge)}</span>
+            <time datetime="${escapeHtml(msg.timestamp || '')}">${escapeHtml(dateStr)}</time>
+          </div>
+        </div>
+
+        <div class="inbox-subject-line">
+          <strong>Subject:</strong> ${escapeHtml(msg.subject || 'Portfolio Inquiry')}
+        </div>
+
+        <div class="inbox-message-content">${escapeHtml(msg.message || '')}</div>
+
+        <div class="inbox-card-actions">
+          <button type="button" class="btn btn-secondary btn-sm" onclick="copySenderEmail('${escapeHtml(msg.email || '')}')" title="Copy email address to clipboard">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span>Copy Email</span>
+          </button>
+          <a href="${mailtoLink}" class="btn btn-primary btn-sm" title="Reply to sender via email">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+            <span>Reply via Email</span>
+          </a>
+          <button type="button" class="btn btn-tertiary btn-sm" style="color: var(--error);" onclick="deleteInboxMessage('${escapeHtml(msg.id)}')" title="Delete this message">
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>Delete</span>
+          </button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+window.deleteInboxMessage = function(msgId) {
+  const msgs = getStoredMessages();
+  const updated = msgs.filter(m => m.id !== msgId);
+  localStorage.setItem('portfolio_inbox_messages', JSON.stringify(updated));
+  const searchVal = getValue('inbox-search-input');
+  renderInboxMessages(searchVal);
+  showToast('🗑️ Message deleted from inbox.');
+};
+
+window.clearAllInboxMessages = function() {
+  const msgs = getStoredMessages();
+  if (msgs.length === 0) {
+    showToast('Inbox is already empty.');
+    return;
+  }
+  if (confirm(`Are you sure you want to delete all ${msgs.length} message(s)? This action cannot be undone.`)) {
+    localStorage.removeItem('portfolio_inbox_messages');
+    setValue('inbox-search-input', '');
+    renderInboxMessages();
+    showToast('🗑️ All inbox messages cleared.');
+  }
+};
+
+window.copySenderEmail = function(email) {
+  if (!email) return;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(email).then(() => {
+      showToast(`📋 Copied: ${email}`);
+    }).catch(() => {
+      showToast(`Email: ${email}`);
+    });
+  } else {
+    showToast(`Email: ${email}`);
+  }
+};
+
+function exportInboxMessages() {
+  const msgs = getStoredMessages();
+  if (msgs.length === 0) {
+    showToast('No messages to export.');
+    return;
+  }
+  const jsonStr = JSON.stringify(msgs, null, 2);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const dateSlug = new Date().toISOString().split('T')[0];
+  a.href = url;
+  a.download = `portfolio-messages-${dateSlug}.json`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 Messages exported to JSON file!');
 }
 
 /* ==========================================================================

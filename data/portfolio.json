@@ -151,5 +151,11 @@
       "description": "Completed secondary education in the Engineering Technology stream with honors, establishing strong foundations in mathematics, algorithmic logic, and computing principles.",
       "type": "education"
     }
-  ]
+  ],
+  "contactSettings": {
+    "provider": "web3forms",
+    "accessKey": "",
+    "formspreeId": "",
+    "notificationEmail": "adeepadmarambage@gmail.com"
+  }
 }

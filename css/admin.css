@@ -583,6 +583,250 @@
   resize: vertical;
 }
 
+/* --- 9. Messages Inbox & Contact Settings --- */
+.inbox-badge-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: var(--radius-full);
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  background: var(--accent-primary);
+  color: #07090e;
+  box-shadow: 0 0 8px var(--accent-glow);
+  margin-left: 4px;
+}
+
+.inbox-api-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  background: rgba(0, 240, 255, 0.05);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+}
+
+.inbox-api-banner-icon {
+  color: var(--accent-primary);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.inbox-api-banner-text strong {
+  color: var(--text-primary);
+  display: block;
+  margin-bottom: var(--space-1);
+  font-size: 0.9375rem;
+}
+
+.inbox-api-banner-text p {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.inbox-status-pill {
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  color: var(--accent-primary);
+  background: var(--accent-glow-subtle);
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+}
+
+.inbox-toolbar {
+  margin-bottom: var(--space-6);
+}
+
+.inbox-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inbox-search-box svg {
+  position: absolute;
+  left: 14px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+.inbox-search-box input {
+  width: 100%;
+  padding: 10px 14px 10px 40px;
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  transition: all var(--transition-fast);
+}
+
+.inbox-search-box input:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 10px var(--accent-glow-subtle);
+  outline: none;
+}
+
+.inbox-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.inbox-message-card {
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-card);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.inbox-message-card:hover {
+  border-color: var(--border-subtle);
+  box-shadow: var(--shadow-md);
+}
+
+.inbox-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.inbox-sender-group {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.inbox-sender-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: var(--radius-full);
+  background: var(--accent-glow-subtle);
+  border: 1px solid var(--accent-primary);
+  color: var(--accent-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 0.9375rem;
+  flex-shrink: 0;
+}
+
+.inbox-sender-details h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 2px;
+}
+
+.inbox-sender-email {
+  font-size: 0.8125rem;
+  color: var(--accent-primary);
+  text-decoration: none;
+}
+
+.inbox-sender-email:hover {
+  text-decoration: underline;
+}
+
+.inbox-meta-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.inbox-delivery-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: var(--radius-full);
+  background: rgba(16, 185, 129, 0.12);
+  color: #10b981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.inbox-subject-line {
+  font-weight: 600;
+  font-size: 0.9375rem;
+  color: var(--text-primary);
+  margin-bottom: var(--space-2);
+}
+
+.inbox-message-content {
+  background: var(--bg-base);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: var(--space-4);
+}
+
+.inbox-card-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.inbox-empty-state {
+  text-align: center;
+  padding: var(--space-12) var(--space-4);
+  color: var(--text-muted);
+}
+
+.inbox-empty-icon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto var(--space-4);
+  border-radius: var(--radius-full);
+  background: var(--bg-surface-elevated);
+  border: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.inbox-empty-state h4 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+
+.inbox-empty-state p {
+  font-size: 0.875rem;
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.5;
+}
+
 /* Responsive queries */
 @media (max-width: 900px) {
   .admin-form-grid,
