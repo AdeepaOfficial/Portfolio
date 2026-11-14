@@ -274,6 +274,7 @@ async function initPortfolioData() {
   }
 
   // Hydrate UI sections
+  renderBranding(data.profile);
   renderHero(data.profile);
   renderAbout(data.profile);
   renderStats(data.stats);
@@ -285,6 +286,36 @@ async function initPortfolioData() {
   initTypewriter(data.profile.typewriterRoles || [data.profile.role]);
   initProjectFiltering();
   initIntersectionObservers();
+}
+
+/* Render Branding & Monogram */
+function renderBranding(profile) {
+  if (!profile) return;
+  const navMonogram = document.getElementById('nav-monogram');
+  const navLogoText = document.getElementById('nav-logo-text');
+  const aboutMonogram = document.getElementById('about-monogram');
+  const footerCopyright = document.getElementById('footer-copyright');
+
+  // Update all elements with class .monogram
+  document.querySelectorAll('.monogram').forEach(el => {
+    if (profile.monogram) el.textContent = profile.monogram;
+  });
+
+  if (navMonogram && profile.monogram) {
+    navMonogram.textContent = profile.monogram;
+  }
+  if (navLogoText && (profile.shortName || profile.name)) {
+    navLogoText.textContent = profile.shortName || profile.name.split(' ')[0];
+  }
+  if (aboutMonogram && profile.monogram) {
+    aboutMonogram.textContent = profile.monogram;
+  }
+  if (profile.name) {
+    document.title = `${profile.name} | ${profile.role || 'Full-Stack Software Engineer'}`;
+  }
+  if (footerCopyright && profile.name) {
+    footerCopyright.innerHTML = `&copy; 2026 ${escapeHtml(profile.name)}. Crafted with clean HTML5, CSS3 &amp; Vanilla JavaScript.`;
+  }
 }
 
 /* Render Hero Content */
@@ -694,3 +725,10 @@ function escapeHtml(str) {
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
 }
+
+/* Auto-sync when changes are saved from the admin editor in another tab */
+window.addEventListener('storage', (e) => {
+  if (e.key === 'portfolio_custom_data') {
+    initPortfolioData();
+  }
+});

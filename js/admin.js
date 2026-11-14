@@ -320,6 +320,13 @@ async function loadInitialData() {
   syncToRawJsonEditor();
 }
 
+function updateAdminHeaderBranding(monogram, shortName) {
+  const adminMonogram = document.getElementById('admin-header-monogram');
+  const adminLogoText = document.getElementById('admin-header-logo-text');
+  if (adminMonogram && monogram) adminMonogram.textContent = monogram;
+  if (adminLogoText && shortName) adminLogoText.textContent = shortName;
+}
+
 function populateProfileForm() {
   const p = currentData.profile || {};
   setValue('profile-name', p.name);
@@ -334,6 +341,8 @@ function populateProfileForm() {
   setValue('profile-status', p.status);
   setValue('profile-bio', p.bioSummary);
   setValue('profile-typewriter', (p.typewriterRoles || []).join('\n'));
+
+  updateAdminHeaderBranding(p.monogram || '<AM />', p.shortName || 'Adeepa');
 }
 
 function populateStatsForm() {
@@ -599,10 +608,14 @@ function initGlobalActions() {
 
   // Collect form data back into currentData
   function gatherFormData() {
+    const rawMonogram = getValue('profile-monogram') || '<AM />';
+    const rawShortName = getValue('profile-shortname') || 'Adeepa';
+    updateAdminHeaderBranding(rawMonogram, rawShortName);
+
     currentData.profile = {
       name: getValue('profile-name'),
-      shortName: getValue('profile-shortname'),
-      monogram: getValue('profile-monogram'),
+      shortName: rawShortName,
+      monogram: rawMonogram,
       role: getValue('profile-degree'),
       degree: getValue('profile-degree'),
       institution: getValue('profile-institution'),
@@ -622,6 +635,20 @@ function initGlobalActions() {
       label: getValue(`stat-lbl-${i}`),
       numeric: getValue(`stat-num-${i}`) ? parseInt(getValue(`stat-num-${i}`), 10) : null
     }));
+  }
+
+  // Real-time branding input listeners
+  const monoInput = document.getElementById('profile-monogram');
+  const shortNameInput = document.getElementById('profile-shortname');
+  if (monoInput) {
+    monoInput.addEventListener('input', (e) => {
+      updateAdminHeaderBranding(e.target.value || '<AM />', getValue('profile-shortname') || 'Adeepa');
+    });
+  }
+  if (shortNameInput) {
+    shortNameInput.addEventListener('input', (e) => {
+      updateAdminHeaderBranding(getValue('profile-monogram') || '<AM />', e.target.value || 'Adeepa');
+    });
   }
 
   // Save & Apply Live to localStorage
